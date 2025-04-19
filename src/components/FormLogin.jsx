@@ -3,18 +3,50 @@ import InputFormAuth from "./InputFormAuth";
 import ButtonSubmitAuthForm from "./buttonSubmitAuthForm";
 import FooterAuthPage from "./footerAuthPage";
 import { FaEnvelope, FaLock } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { Context } from "../context/UserContext";
 
 const FormLogin = () => {
+  const { setIsAuthenticated } = useContext(Context);
+  const navigate = useNavigate();
+
+  const HandleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+
+    try {
+      const response = await fetch("http://localhost:8000/api/login", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+        },
+        body: formData,
+      });
+
+    if (response.status === 201 || response.status === 403) {
+     setIsAuthenticated(true);
+     navigate("/home");
+   }
+   const res = await response.json();
+   console.log(res);
+ } catch (error) {
+   console.log(error);
+ }
+  };
+
   return (
     <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 lg:px-16 xl:px-24">
       <div className="max-w-md w-full mx-auto">
-      <div className="mt-8">
-        <HeaderAuthPage
-          title="Connexion"
-          description="Entrez vos identifiants pour accéder à votre compte"
-        />
-       </div>
-        <form method="POST" className="space-y-4">
+        <div className="mt-8">
+          <HeaderAuthPage
+            title="Connexion"
+            description="Entrez vos identifiants pour accéder à votre compte"
+          />
+        </div>
+
+        <form method="POST" className="space-y-4" onSubmit={HandleSubmit}>
           <InputFormAuth
             id="email"
             type="email"
@@ -66,7 +98,6 @@ const FormLogin = () => {
           type="button"
           className="w-full py-3 border border-gray-300 rounded-md flex justify-center items-center space-x-2 hover:bg-gray-50 text-sm"
         >
-          {/* Icône Google */}
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="16"
@@ -108,4 +139,3 @@ const FormLogin = () => {
 };
 
 export default FormLogin;
-

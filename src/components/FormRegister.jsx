@@ -1,10 +1,41 @@
+import { Hand } from "lucide-react";
 import HeaderAuthPage from "./HeaderAuthPage";
 import InputFormAuth from "./InputFormAuth";
 import ButtonSubmitAuthForm from "./buttonSubmitAuthForm";
 import FooterAuthPage from "./footerAuthPage";
 import { FaUser, FaEnvelope, FaLock } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { Context } from "../context/UserContext";
+import { useContext } from "react";
 
 const FormRegister = () => {
+  const { setIsAuthenticated } = useContext(Context);
+  const navigate = useNavigate();
+  const HandleSubmit = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+
+    try {
+      const response = await fetch("http://localhost:8000/api/register", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+        },
+        body: formData,
+      });
+      if (response.status === 201 || response.status === 403) {
+       setIsAuthenticated(true);
+       navigate("/home");
+      };
+      const res = await response.json();
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 lg:px-16 xl:px-24">
       <div className="max-w-md w-full mx-auto">
@@ -15,7 +46,7 @@ const FormRegister = () => {
           />
         </div>
 
-        <form method="POST" className="space-y-4">
+        <form method="POST" className="space-y-4" onSubmit={HandleSubmit}>
           <InputFormAuth
             id="name"
             type="text"
