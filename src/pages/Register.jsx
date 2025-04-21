@@ -1,11 +1,11 @@
 import React from "react";
 import LayoutAuthPage from "../components/LayoutAuthPage";
 import FormRegister from "../components/FormRegister";
-import GuestLayout from "../layouts/GuestLayout";
+
 
 const Register = () => {
   return (
-    <GuestLayout>
+
       <div className="h-screen">
         <div className="flex h-full">
           <LayoutAuthPage
@@ -16,7 +16,7 @@ const Register = () => {
           <FormRegister />
         </div>
       </div>
-    </GuestLayout>
+
   );
 };
 

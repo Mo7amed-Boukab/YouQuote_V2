@@ -1,11 +1,11 @@
 import React from "react";
 import LayoutAuthPage from "../components/LayoutAuthPage";
 import FormLogin from "../components/FormLogin";
-import GuestLayout from "../layouts/GuestLayout";
+
 
 const Login = () => {
   return (
-    <GuestLayout>
+
       <div className="h-screen">
         <div className="flex h-full">
           <LayoutAuthPage
@@ -16,7 +16,7 @@ const Login = () => {
           <FormLogin />
         </div>
       </div>
-    </GuestLayout>
+
   );
 };
 

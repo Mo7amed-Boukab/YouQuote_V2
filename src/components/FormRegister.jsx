@@ -1,44 +1,45 @@
-import { Hand } from "lucide-react";
 import HeaderAuthPage from "./HeaderAuthPage";
 import InputFormAuth from "./InputFormAuth";
 import ButtonSubmitAuthForm from "./buttonSubmitAuthForm";
-import FooterAuthPage from "./footerAuthPage";
+import FooterAuthPage from "./FooterAuthPage";
 import { FaUser, FaEnvelope, FaLock } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { Context } from "../context/UserContext";
-import { useContext } from "react";
+import { useState } from "react";
+import axios from "../axios";
 
 const FormRegister = () => {
-  const { setIsAuthenticated } = useContext(Context);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
+
   const navigate = useNavigate();
+
   const HandleSubmit = async (e) => {
     e.preventDefault();
-
     const formData = new FormData(e.target);
 
     try {
-      const response = await fetch("http://localhost:8000/api/register", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          Accept: "application/json",
-        },
-        body: formData,
-      });
-      if (response.status === 201 || response.status === 403) {
-       setIsAuthenticated(true);
-       navigate("/home");
-      };
-      const res = await response.json();
-      console.log(res);
+      const { data, status } = await axios.post("/register", formData);
+
+      if (status === 201) {
+        setIsAuthenticated(true);
+        setUser(data.user);
+        console.log(data.user);
+        navigate("/login");
+      } else {
+        console.error("Échec de l'inscription");
+      }
     } catch (error) {
-      console.log(error);
+      if (error.response) {
+        console.error("Erreur API :", error.response.data.message);
+      } else {
+        console.error("Erreur réseau :", error.message);
+      }
     }
   };
 
   return (
-    <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 lg:px-16 xl:px-24">
-      <div className="max-w-md w-full mx-auto">
+    <div className="flex flex-col justify-center px-8 w-full lg:w-1/2 lg:px-16 xl:px-24">
+      <div className="mx-auto w-full max-w-md">
         <div className="mt-8">
           <HeaderAuthPage
             title="Créer un Compte"
@@ -80,16 +81,16 @@ const FormRegister = () => {
         </form>
 
         {/* Divider */}
-        <div className="flex items-center justify-center space-x-2 my-6">
+        <div className="flex justify-center items-center my-6 space-x-2">
           <hr className="w-1/2 border-gray-300" />
-          <span className="text-gray-500 text-sm">ou</span>
+          <span className="text-sm text-gray-500">ou</span>
           <hr className="w-1/2 border-gray-300" />
         </div>
 
         {/* Google Sign Up */}
         <button
           type="button"
-          className="w-full py-3 border border-gray-300 rounded-md flex justify-center items-center space-x-2 hover:bg-gray-50 text-sm"
+          className="flex justify-center items-center py-3 space-x-2 w-full text-sm rounded-md border border-gray-300 hover:bg-gray-50"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

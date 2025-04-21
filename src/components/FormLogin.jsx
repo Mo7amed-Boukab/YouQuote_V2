@@ -1,14 +1,16 @@
 import HeaderAuthPage from "./HeaderAuthPage";
 import InputFormAuth from "./InputFormAuth";
 import ButtonSubmitAuthForm from "./buttonSubmitAuthForm";
-import FooterAuthPage from "./footerAuthPage";
+import FooterAuthPage from "./FooterAuthPage";
 import { FaEnvelope, FaLock } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { useContext } from "react";
-import { Context } from "../context/UserContext";
+import { useState } from "react";
+import axios from "../axios";
 
 const FormLogin = () => {
-  const { setIsAuthenticated } = useContext(Context);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
+
   const navigate = useNavigate();
 
   const HandleSubmit = async (e) => {
@@ -16,24 +18,25 @@ const FormLogin = () => {
     const formData = new FormData(e.target);
 
     try {
-      const response = await fetch("http://localhost:8000/api/login", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          Accept: "application/json",
-        },
-        body: formData,
-      });
+      const { status, data } = await axios.post("/login", formData);
 
-    if (response.status === 201 || response.status === 403) {
-     setIsAuthenticated(true);
-     navigate("/home");
-   }
-   const res = await response.json();
-   console.log(res);
- } catch (error) {
-   console.log(error);
- }
+      if (status === 201 || status === 200) {
+        setIsAuthenticated(true);
+        setUser(data.user);
+        localStorage.setItem("authToken", data.token);
+        navigate("/home");
+      } else {
+        console.error("Connexion échouée");
+      }
+
+      console.log(data);
+    } catch (error) {
+      if (error.response) {
+        console.error("Erreur API :", error.response.data.message);
+      } else {
+        console.error("Erreur réseau :", error.message);
+      }
+    }
   };
 
   return (
@@ -78,7 +81,10 @@ const FormLogin = () => {
                 Se souvenir de moi
               </label>
             </div>
-            <a href="#" className="text-sm font-medium text-gray-900 hover:underline">
+            <a
+              href="#"
+              className="text-sm font-medium text-gray-900 hover:underline"
+            >
               Mot de passe oublié ?
             </a>
           </div>
