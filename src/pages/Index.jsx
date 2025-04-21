@@ -36,6 +36,10 @@ export default function Index() {
     }
   }, [token]);
 
+  const handleCategorySelect = (filteredQuotes) => {
+    setQuotes(filteredQuotes);
+  };
+
   const Logout = async (e) => {
     e.preventDefault();
     try {
@@ -101,7 +105,7 @@ export default function Index() {
           </ButtonHomePage>
         </div>
 
-        <CategoriesLinks />
+        <CategoriesLinks onCategorySelect={handleCategorySelect} />
 
         <div className="grid grid-cols-1 gap-6 mx-20 md:grid-cols-2 lg:grid-cols-3">
           {quotes.map((quote) => (
